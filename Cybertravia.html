@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CyberTrivia - Cybersecurity Quiz Game</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+            color: #e0e0e0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            width: 100%;
+            background: rgba(25, 35, 45, 0.9);
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+            padding: 25px;
+            margin-top: 20px;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #4db8ff;
+        }
+        
+        h1 {
+            color: #4db8ff;
+            font-size: 2.8rem;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+        }
+        
+        h2 {
+            color: #7fdbff;
+            margin: 15px 0;
+        }
+        
+        .subtitle {
+            color: #b6e0fe;
+            font-size: 1.2rem;
+        }
+        
+        .screen {
+            display: none;
+        }
+        
+        .active {
+            display: block;
+        }
+        
+        .btn {
+            background: linear-gradient(to right, #4db8ff, #2a85d0);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            margin: 10px 5px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        .btn:hover {
+            background: linear-gradient(to right, #2a85d0, #4db8ff);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+        }
+        
+        .btn:active {
+            transform: translateY(0);
+        }
+        
+        .btn-start {
+            background: linear-gradient(to right, #4dff4d, #00b300);
+            padding: 15px 40px;
+            font-size: 1.2rem;
+        }
+        
+        .btn-start:hover {
+            background: linear-gradient(to right, #00b300, #4dff4d);
+        }
+        
+        .answer-btn {
+            display: block;
+            width: 100%;
+            text-align: left;
+            margin: 10px 0;
+            padding: 15px 20px;
+            background: rgba(50, 70, 90, 0.7);
+            border: 1px solid #5a7d9a;
+            border-radius: 8px;
+            color: #e0e0e0;
+            transition: all 0.2s ease;
+        }
+        
+        .answer-btn:hover {
+            background: rgba(60, 100, 140, 0.8);
+            border-color: #7fdbff;
+        }
+        
+        .correct {
+            background: linear-gradient(to right, #4dff4d, #00b300);
+            border-color: #00b300;
+            color: white;
+        }
+        
+        .incorrect {
+            background: linear-gradient(to right, #ff4d4d, #b30000);
+            border-color: #b30000;
+            color: white;
+        }
+        
+        .question-container {
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(40, 55, 70, 0.6);
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        .question-text {
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            color: #7fdbff;
+            line-height: 1.4;
+        }
+        
+        .score-container {
+            display: flex;
+            justify-content: space-between;
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(30, 45, 60, 0.7);
+            border-radius: 10px;
+            font-size: 1.2rem;
+        }
+        
+        .category-select {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin: 20px 0;
+        }
+        
+        .category-btn {
+            background: linear-gradient(to right, #ff7b25, #d65c00);
+            margin: 8px;
+            flex-basis: calc(50% - 16px);
+        }
+        
+        .category-btn:hover {
+            background: linear-gradient(to right, #d65c00, #ff7b25);
+        }
+        
+        .progress-bar {
+            height: 10px;
+            background: #2c5364;
+            border-radius: 5px;
+            margin: 15px 0;
+            overflow: hidden;
+        }
+        
+        .progress {
+            height: 100%;
+            background: linear-gradient(to right, #4db8ff, #2a85d0);
+            border-radius: 5px;
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+        
+        .results-container {
+            text-align: center;
+        }
+        
+        .score-display {
+            font-size: 3rem;
+            color: #4db8ff;
+            margin: 20px 0;
+        }
+        
+        .score-comment {
+            font-size: 1.4rem;
+            margin-bottom: 25px;
+            color: #7fdbff;
+        }
+        
+        .explanation {
+            background: rgba(40, 55, 70, 0.6);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            border-left: 4px solid #4db8ff;
+        }
+        
+        @media (max-width: 600px) {
+            .container {
+                padding: 15px;
+            }
+            
+            h1 {
+                font-size: 2.2rem;
+            }
+            
+            .btn {
+                padding: 10px 15px;
+                font-size: 0.9rem;
+            }
+            
+            .question-text {
+                font-size: 1.1rem;
+            }
+            
+            .category-btn {
+                flex-basis: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>CyberTrivia</h1>
+            <p class="subtitle">Test your cybersecurity knowledge</p>
+        </header>
+        
+        <!-- Welcome Screen -->
+        <div id="welcome-screen" class="screen active">
+            <h2>Welcome to CyberTrivia!</h2>
+            <p>This game will test your knowledge of cybersecurity concepts, terminology, and best practices.</p>
+            <p>You'll face 10 questions on topics ranging from phishing to encryption. Select the best answer for each question and see your score at the end!</p>
+            <div style="text-align: center; margin: 30px 0;">
+                <button id="start-btn" class="btn btn-start">Start Game</button>
+            </div>
+            <div class="explanation">
+                <h3>Why Learn Cybersecurity?</h3>
+                <p>Understanding cybersecurity basics is essential for everyone in our digital world. This knowledge helps protect your personal information, recognize online threats, and develop safer digital habits.</p>
+            </div>
+        </div>
+        
+        <!-- Category Selection Screen -->
+        <div id="category-screen" class="screen">
+            <h2>Select a Category</h2>
+            <p>Choose an area to focus on or select mixed for a variety of questions:</p>
+            <div class="category-select">
+                <button class="btn category-btn" data-category="phishing">Phishing & Social Engineering</button>
+                <button class="btn category-btn" data-category="passwords">Password Security</button>
+                <button class="btn category-btn" data-category="privacy">Privacy & Social Media</button>
+                <button class="btn category-btn" data-category="mixed">Mixed Questions</button>
+            </div>
+        </div>
+        
+        <!-- Game Screen -->
+        <div id="game-screen" class="screen">
+            <div class="score-container">
+                <div>Question: <span id="question-number">1</span>/10</div>
+                <div>Score: <span id="score">0</span></div>
+            </div>
+            <div class="progress-bar">
+                <div class="progress" id="progress-bar"></div>
+            </div>
+            <div class="question-container">
+                <div class="question-text" id="question-text"></div>
+                <div id="answer-buttons" class="answer-buttons"></div>
+            </div>
+        </div>
+        
+        <!-- Results Screen -->
+        <div id="results-screen" class="screen">
+            <div class="results-container">
+                <h2>Quiz Completed!</h2>
+                <div class="score-display">Your score: <span id="final-score">0</span>/10</div>
+                <div class="score-comment" id="score-comment">Well done!</div>
+                <div id="explanation-container"></div>
+                <button id="restart-btn" class="btn">Play Again</button>
+                <button id="change-category" class="btn">Change Category</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Game variables
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let selectedCategory = 'mixed';
+        let questions = [];
+        
+        // DOM elements
+        const welcomeScreen = document.getElementById('welcome-screen');
+        const categoryScreen = document.getElementById('category-screen');
+        const gameScreen = document.getElementById('game-screen');
+        const resultsScreen = document.getElementById('results-screen');
+        const questionText = document.getElementById('question-text');
+        const answerButtons = document.getElementById('answer-buttons');
+        const questionNumber = document.getElementById('question-number');
+        const scoreDisplay = document.getElementById('score');
+        const finalScore = document.getElementById('final-score');
+        const scoreComment = document.getElementById('score-comment');
+        const explanationContainer = document.getElementById('explanation-container');
+        const progressBar = document.getElementById('progress-bar');
+        
+        // Question banks by category
+        const questionBanks = {
+            phishing: [
+                {
+                    question: "What is a common red flag in a phishing email?",
+                    answers: [
+                        { text: "It addresses you by name", correct: false },
+                        { text: "It has grammatical errors and a sense of urgency", correct: true },
+                        { text: "It comes from a company you know", correct: false },
+                        { text: "It includes a phone number", correct: false }
+                    ],
+                    explanation: "Phishing emails often contain grammatical errors and create a sense of urgency to pressure you into acting without thinking."
+                },
+                {
+                    question: "You receive a call from 'IT Support' asking for your password to fix an issue. What is this called?",
+                    answers: [
+                        { text: "Vishing (Voice Phishing)", correct: true },
+                        { text: "Smishing (SMS Phishing)", correct: false },
+                        { text: "Pharming", correct: false },
+                        { text: "Spamming", correct: false }
+                    ],
+                    explanation: "This is called Vishing or Voice Phishing. Legitimate IT support will never ask for your password."
+                }
+            ],
+            passwords: [
+                {
+                    question: "Which of these is the strongest password?",
+                    answers: [
+                        { text: "password123", correct: false },
+                        { text: "Fido2024!", correct: false },
+                        { text: "BlueHouseDog$", correct: false },
+                        { text: "Tr!c3r@t0ps", correct: true }
+                    ],
+                    explanation: "'Tr!c3r@t0ps' is the strongest as it uses uppercase, lowercase, numbers, symbols, and is not a dictionary word or simple pattern."
+                },
+                {
+                    question: "What is the name for the technology that adds an extra step (like a code from your phone) beyond just a password?",
+                    answers: [
+                        { text: "Password manager", correct: false },
+                        { text: "Multi-Factor Authentication", correct: true },
+                        { text: "Encryption", correct: false },
+                        { text: "Firewall", correct: false }
+                    ],
+                    explanation: "Multi-Factor Authentication (MFA) or Two-Factor Authentication (2FA) adds an extra layer of security beyond just a password."
+                }
+            ],
+            privacy: [
+                {
+                    question: "True or False: You should accept connection requests from people you don't know on LinkedIn.",
+                    answers: [
+                        { text: "True", correct: false },
+                        { text: "False", correct: true }
+                    ],
+                    explanation: "False. Fake profiles are commonly used for reconnaissance and social engineering attacks."
+                },
+                {
+                    question: "What is 'doxing'?",
+                    answers: [
+                        { text: "Fixing documentation errors", correct: false },
+                        { text: "The act of publicly revealing private personal information", correct: true },
+                        { text: "Creating multiple online accounts", correct: false },
+                        { text: "Deleting old social media posts", correct: false }
+                    ],
+                    explanation: "Doxing is the malicious act of publicly revealing previously private personal information about an individual."
+                }
+            ],
+            mixed: [
+                {
+                    question: "What should you do if you receive a suspicious email asking for personal information?",
+                    answers: [
+                        { text: "Reply with the information requested", correct: false },
+                        { text: "Click links to verify the sender", correct: false },
+                        { text: "Delete it and report as phishing", correct: true },
+                        { text: "Forward it to friends to warn them", correct: false }
+                    ],
+                    explanation: "The safest action is to delete the email and report it as phishing to your email provider."
+                },
+                {
+                    question: "Which of these is a characteristic of a secure website?",
+                    answers: [
+                        { text: "HTTP in the URL", correct: false },
+                        { text: "Padlock icon in the address bar", correct: true },
+                        { text: "Many pop-up ads", correct: false },
+                        { text: "No privacy policy", correct: false }
+                    ],
+                    explanation: "The padlock icon indicates that the website uses HTTPS, encrypting data between your browser and the site."
+                }
+            ]
+        };
+        
+        // Add more questions to each category to ensure we have at least 10
+        questionBanks.phishing.push(
+            {
+                question: "What does 'spear phishing' mean?",
+                answers: [
+                    { text: "Phishing attempts targeting specific individuals or organizations", correct: true },
+                    { text: "Phishing attempts sent via text message", correct: false },
+                    { text: "Phishing attempts that use voice calls", correct: false },
+                    { text: "Phishing attempts that threaten legal action", correct: false }
+                ],
+                explanation: "Spear phishing is a highly targeted form of phishing aimed at specific individuals or organizations, often using personalized information."
+            },
+            {
+                question: "What should you do before clicking a link in an email?",
+                answers: [
+                    { text: "Check the sender's email address for authenticity", correct: true },
+                    { text: "Click it immediately to see where it goes", correct: false },
+                    { text: "Forward the email to everyone in your contacts", correct: false },
+                    { text: "Reply to the email asking if it's legitimate", correct: false }
+                ],
+                explanation: "Always hover over links to see the actual URL and verify the sender's email address is legitimate before clicking."
+            }
+        );
+        
+        questionBanks.passwords.push(
+            {
+                question: "What is the primary benefit of using a password manager?",
+                answers: [
+                    { text: "It creates passwords for you", correct: false },
+                    { text: "It helps you use unique passwords for each account", correct: true },
+                    { text: "It remembers all your passwords automatically", correct: false },
+                    { text: "It changes your passwords regularly", correct: false }
+                ],
+                explanation: "The main security benefit of password managers is that they enable you to use unique, strong passwords for every account without having to memorize them all."
+            },
+            {
+                question: "How often should you change your passwords?",
+                answers: [
+                    { text: "Every week", correct: false },
+                    { text: "Every month", correct: false },
+                    { text: "Every year", correct: false },
+                    { text: "When there's reason to believe they're compromised", correct: true }
+                ],
+                explanation: "Current security best practices recommend changing passwords only when there's evidence of compromise, not on an arbitrary schedule."
+            }
+        );
+        
+        questionBanks.privacy.push(
+            {
+                question: "What is the best practice for sharing vacation plans on social media?",
+                answers: [
+                    { text: "Post in real-time to share your experience", correct: false },
+                    { text: "Wait until you return home to post about it", correct: true },
+                    { text: "Only share with close friends", correct: false },
+                    { text: "Post detailed itineraries publicly", correct: false }
+                ],
+                explanation: "Wait until you return home to post about vacations. Real-time posts can alert criminals that your home is empty."
+            },
+            {
+                question: "What should you avoid sharing on social media profiles?",
+                answers: [
+                    { text: "Your favorite movies", correct: false },
+                    { text: "Your mother's maiden name", correct: true },
+                    { text: "Your hobbies", correct: false },
+                    { text: "Your opinions", correct: false }
+                ],
+                explanation: "Avoid sharing information commonly used for security verification, like your mother's maiden name, pet names, or elementary school."
+            }
+        );
+        
+        questionBanks.mixed.push(
+            {
+                question: "What is encryption used for?",
+                answers: [
+                    { text: "Speeding up internet connection", correct: false },
+                    { text: "Protecting data by converting it into a secure code", correct: true },
+                    { text: "Blocking unwanted emails", correct: false },
+                    { text: "Creating strong passwords", correct: false }
+                ],
+                explanation: "Encryption converts data into a coded form to prevent unauthorized access, ensuring only authorized parties can read it."
+            },
+            {
+                question: "What is a VPN used for?",
+                answers: [
+                    { text: "Increasing internet speed", correct: false },
+                    { text: "Creating a secure connection over the internet", correct: true },
+                    { text: "Blocking all ads", correct: false },
+                    { text: "Managing passwords", correct: false }
+                ],
+                explanation: "A Virtual Private Network (VPN) creates a secure, encrypted tunnel between your device and the internet, protecting your online privacy."
+            },
+            {
+                question: "What does HTTPS stand for?",
+                answers: [
+                    { text: "HyperText Transfer Protocol Secure", correct: true },
+                    { text: "HyperText Transfer Privacy System", correct: false },
+                    { text: "High-level Text Transfer Protection Service", correct: false },
+                    { text: "Hyper Transfer Text Protocol Secure", correct: false }
+                ],
+                explanation: "HTTPS stands for HyperText Transfer Protocol Secure, which indicates a secure, encrypted connection between your browser and the website."
+            },
+            {
+                question: "What is malware?",
+                answers: [
+                    { text: "Software that protects your computer", correct: false },
+                    { text: "Malicious software designed to harm or exploit devices", correct: true },
+                    { text: "A type of hardware firewall", correct: false },
+                    { text: "Software that manages your emails", correct: false }
+                ],
+                explanation: "Malware is malicious software designed to gain unauthorized access, cause damage, or disrupt computer systems."
+            },
+            {
+                question: "What is two-factor authentication?",
+                answers: [
+                    { text: "Using two different passwords", correct: false },
+                    { text: "Verifying identity using two different methods", correct: true },
+                    { text: "Having two-step verification emails", correct: false },
+                    { text: "Using two security questions", correct: false }
+                ],
+                explanation: "Two-factor authentication (2FA) requires two different forms of verification to prove your identity, significantly improving security."
+            },
+            {
+                question: "Why should you keep your software updated?",
+                answers: [
+                    { text: "To get new features", correct: false },
+                    { text: "To fix security vulnerabilities", correct: true },
+                    { text: "To improve performance only", correct: false },
+                    { text: "To change the interface design", correct: false }
+                ],
+                explanation: "Software updates often include patches for security vulnerabilities that have been discovered since the last version."
+            }
+        );
+        
+        // Event listeners
+        document.getElementById('start-btn').addEventListener('click', showCategoryScreen);
+        document.querySelectorAll('.category-btn').forEach(button => {
+            button.addEventListener('click', categorySelect);
+        });
+        document.getElementById('restart-btn').addEventListener('click', restartGame);
+        document.getElementById('change-category').addEventListener('click', showCategoryScreen);
+        
+        // Show category selection screen
+        function showCategoryScreen() {
+            welcomeScreen.classList.remove('active');
+            categoryScreen.classList.add('active');
+            gameScreen.classList.remove('active');
+            resultsScreen.classList.remove('active');
+        }
+        
+        // Handle category selection
+        function categorySelect(e) {
+            selectedCategory = e.target.dataset.category;
+            startGame();
+        }
+        
+        // Start the game
+        function startGame() {
+            currentQuestionIndex = 0;
+            score = 0;
+            
+            // Get questions based on selected category
+            questions = [...questionBanks[selectedCategory]];
+            // Shuffle questions
+            questions.sort(() => Math.random() - 0.5);
+            // Take only first 10 questions
+            questions = questions.slice(0, 10);
+            
+            categoryScreen.classList.remove('active');
+            gameScreen.classList.add('active');
+            resultsScreen.classList.remove('active');
+            
+            showQuestion();
+        }
+        
+        // Display current question
+        function showQuestion() {
+            resetState();
+            const question = questions[currentQuestionIndex];
+            
+            questionNumber.textContent = currentQuestionIndex + 1;
+            scoreDisplay.textContent = score;
+            questionText.textContent = question.question;
+            
+            progressBar.style.width = `${((currentQuestionIndex + 1) / questions.length) * 100}%`;
+            
+            question.answers.forEach(answer => {
+                const button = document.createElement('button');
+                button.classList.add('btn', 'answer-btn');
+                button.textContent = answer.text;
+                if (answer.correct) {
+                    button.dataset.correct = answer.correct;
+                }
+                button.addEventListener('click', selectAnswer);
+                answerButtons.appendChild(button);
+            });
+        }
+        
+        // Reset answer buttons
+        function resetState() {
+            while (answerButtons.firstChild) {
+                answerButtons.removeChild(answerButtons.firstChild);
+            }
+        }
+        
+        // Handle answer selection
+        function selectAnswer(e) {
+            const selectedButton = e.target;
+            const correct = selectedButton.dataset.correct === 'true';
+            
+            // Disable all buttons after selection
+            Array.from(answerButtons.children).forEach(button => {
+                button.disabled = true;
+                if (button.dataset.correct === 'true') {
+                    button.classList.add('correct');
+                } else if (button === selectedButton && !correct) {
+                    button.classList.add('incorrect');
+                }
+            });
+            
+            if (correct) {
+                score++;
+                scoreDisplay.textContent = score;
+            }
+            
+            // Show explanation briefly before next question
+            const explanation = questions[currentQuestionIndex].explanation;
+            const explanationElement = document.createElement('div');
+            explanationElement.classList.add('explanation');
+            explanationElement.textContent = explanation;
+            questionText.after(explanationElement);
+            
+            setTimeout(() => {
+                currentQuestionIndex++;
+                if (currentQuestionIndex < questions.length) {
+                    showQuestion();
+                } else {
+                    showResults();
+                }
+            }, 3000);
+        }
+        
+        // Show results screen
+        function showResults() {
+            gameScreen.classList.remove('active');
+            resultsScreen.classList.add('active');
+            
+            finalScore.textContent = score;
+            
+            // Set score comment based on performance
+            if (score >= 9) {
+                scoreComment.textContent = "Outstanding! You're a cybersecurity expert!";
+            } else if (score >= 7) {
+                scoreComment.textContent = "Great job! You have strong cybersecurity knowledge!";
+            } else if (score >= 5) {
+                scoreComment.textContent = "Good effort! You have basic cybersecurity knowledge.";
+            } else {
+                scoreComment.textContent = "Keep learning! Review cybersecurity basics.";
+            }
+            
+            // Show explanations for all questions
+            explanationContainer.innerHTML = "<h3>Review Questions:</h3>";
+            questions.forEach((question, index) => {
+                const explanationElement = document.createElement('div');
+                explanationElement.classList.add('explanation');
+                explanationElement.innerHTML = `
+                    <p><strong>Question ${index + 1}:</strong> ${question.question}</p>
+                    <p><strong>Explanation:</strong> ${question.explanation}</p>
+                `;
+                explanationContainer.appendChild(explanationElement);
+            });
+        }
+        
+        // Restart the game
+        function restartGame() {
+            currentQuestionIndex = 0;
+            score = 0;
+            startGame();
+        }
+    </script>
+</body>
+</html>
